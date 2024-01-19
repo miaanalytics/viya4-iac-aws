@@ -147,7 +147,7 @@ locals {
         http_put_response_hop_limit = var.default_nodepool_metadata_http_put_response_hop_limit
       }
 
-      placement = {
+      placement = var.use_placement_group == false ? {} : {
         group_name = aws_placement_group.sas.name
       }
 
