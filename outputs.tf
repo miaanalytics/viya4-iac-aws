@@ -241,5 +241,5 @@ output "validate_subnet_azs" {
 
 output "sas_pg" {
   description = "SAS Placement Group"
-  value = aws_placement_group.sas[0].name
+  value = var.use_placement_group == true ? aws_placement_group.sas[0].name : null
 }
