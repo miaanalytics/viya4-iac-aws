@@ -713,3 +713,10 @@ variable "aws_fsx_ontap_file_system_throughput_capacity" {
     error_message = "Valid values for `aws_fsx_ontap_file_system_throughput_capacity` are 128, 256, 512, 1024, 2048 and 4096."
   }
 }
+
+## Use cluster placement group
+variable "use_placement_group" { 
+  description = "Use placement group for SAS EC2 instances"
+  type        = bool
+  default     = true
+}
