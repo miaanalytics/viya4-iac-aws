@@ -147,9 +147,9 @@ locals {
         http_put_response_hop_limit = var.default_nodepool_metadata_http_put_response_hop_limit
       }
 
-      placement = var.use_placement_group == false ? {} : {
+      placement = var.use_placement_group == true && key == "cas" ? {
         group_name = aws_placement_group.sas[0].name
-      }
+      } : {}
 
       # Launch Template
       create_launch_template          = true
