@@ -239,7 +239,7 @@ output "validate_subnet_azs" {
   }
 }
 
-output "sas_pg_cluster" {
-  description = "SAS Placement Group"
+output "sas_pg_cas" {
+  description = "SAS Placement Group for CAS"
   value = var.use_placement_group == true ? aws_placement_group.sas_pg_cas[0].name : null
 }
