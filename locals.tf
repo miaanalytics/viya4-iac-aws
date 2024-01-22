@@ -148,7 +148,7 @@ locals {
       }
 
       placement = (var.use_placement_group == true && key == "cas") ? {
-        group_name = aws_placement_group.sas[0].name
+        group_name = aws_placement_group.sas_pg_cas[0].name
       } : {}
 
       # Launch Template
