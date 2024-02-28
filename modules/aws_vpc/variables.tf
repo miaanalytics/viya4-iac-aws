@@ -126,7 +126,6 @@ variable "vpc_private_endpoints" {
     "ec2"                  = "Interface",
     "ecr.api"              = "Interface",
     "ecr.dkr"              = "Interface",
-    "s3"                   = "Gateway",
     "logs"                 = "Interface",
     "sts"                  = "Interface",
     "elasticloadbalancing" = "Interface",
