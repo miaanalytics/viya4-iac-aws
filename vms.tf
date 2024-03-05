@@ -68,18 +68,18 @@ resource "aws_efs_file_system" "efs-fs" {
   encrypted                       = var.enable_efs_encryption
 }
 
-# create pvs folder as Jump server cannot create it since it does not have the nfs-common package installed
-resource "aws_efs_access_point" "pvs" {
-  file_system_id = aws_efs_file_system.efs-fs[0].id
-  root_directory {
-    creation_info {
-      owner_gid   = 0
-      owner_uid   = 0
-      permissions = 777
-    }
-    path = "/pvs"
-  }
-}
+# create pvs folder as Jump server cannot create it since it does not have the nfs-common package installed - it did not work :(
+# resource "aws_efs_access_point" "pvs" {
+#  file_system_id = aws_efs_file_system.efs-fs[0].id
+#  root_directory {
+#    creation_info {
+#      owner_gid   = 0
+#      owner_uid   = 0
+#      permissions = 777
+#    }
+#    path = "/pvs"
+#  }
+# }
 
 # EFS Mount Target - https://www.terraform.io/docs/providers/aws/r/efs_mount_target.html
 resource "aws_efs_mount_target" "efs-mt" {
