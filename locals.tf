@@ -60,7 +60,7 @@ locals {
 
   # Kubernetes
   kubeconfig_filename = "${local.cluster_name}-kubeconfig.conf"
-  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${local.kubeconfig_filename}" : local.kubeconfig_filename
+  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${local.kubeconfig_filename}" : "/sas/install/${var.prefix}/config/${local.kubeconfig_filename}"
   kubeconfig_ca_cert  = module.eks.cluster_certificate_authority_data
 
   # Mapping node_pools to node_groups
