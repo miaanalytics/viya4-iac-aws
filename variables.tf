@@ -149,7 +149,7 @@ variable "efs_throughput_rate" {
 variable "kubernetes_version" {
   description = "The EKS cluster Kubernetes version."
   type        = string
-  default     = "1.28"
+  default     = "1.29"
 }
 
 variable "tags" {
@@ -636,7 +636,7 @@ variable "vpc_private_endpoints" { # tflint-ignore: terraform_unused_declaration
     "ec2"                  = "Interface",
     "ecr.api"              = "Interface",
     "ecr.dkr"              = "Interface",
-    "s3"                   = "Gateway",
+    "s3"                   = "Interface",
     "logs"                 = "Interface",
     "sts"                  = "Interface",
     "elasticloadbalancing" = "Interface",
@@ -712,4 +712,10 @@ variable "aws_fsx_ontap_file_system_throughput_capacity" {
     condition     = contains([128, 256, 512, 1024, 2048, 4096], var.aws_fsx_ontap_file_system_throughput_capacity)
     error_message = "Valid values for `aws_fsx_ontap_file_system_throughput_capacity` are 128, 256, 512, 1024, 2048 and 4096."
   }
+}
+
+variable "enable_nist_features" {
+  description = "A flag to enable NIST features under development for this project"
+  type        = bool
+  default     = false
 }
