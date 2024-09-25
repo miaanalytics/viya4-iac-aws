@@ -65,8 +65,8 @@ resource "aws_vpc_endpoint" "private_endpoints" {
   )
 
   subnet_ids = each.value == "Interface" ? [
-   for subnet in local.endpoint_subnets : subnet.id
-   # "subnet-0c8b455d0b4a2db3a"
+    for subnet in local.endpoint_subnets : subnet.id
+    # "subnet-0c8b455d0b4a2db3a"
   ] : null
 }
 
