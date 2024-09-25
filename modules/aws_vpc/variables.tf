@@ -107,6 +107,12 @@ variable "database_subnet_suffix" {
   default     = "db"
 }
 
+variable "endpoint_subnet_suffix" {
+  description = "Suffix to append to database subnets name"
+  type        = string
+  default     = "ep"
+}
+
 variable "control_plane_subnet_suffix" {
   description = "Suffix to append to control plane subnets name"
   type        = string

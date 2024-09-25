@@ -11,6 +11,7 @@ locals {
   existing_private_subnets  = local.existing_subnets && contains(keys(var.existing_subnet_ids), "private") ? (length(var.existing_subnet_ids["private"]) > 0 ? true : false) : false
   existing_database_subnets = local.existing_subnets && contains(keys(var.existing_subnet_ids), "database") ? (length(var.existing_subnet_ids["database"]) > 0 ? true : false) : false
   existing_control_plane_subnets = local.existing_subnets && contains(keys(var.existing_subnet_ids), "control_plane") ? (length(var.existing_subnet_ids["control_plane"]) > 0 ? true : false) : false
+  existing_endpoint_subnets = local.existing_subnets && contains(keys(var.existing_subnet_ids), "endpoint") ? (length(var.existing_subnet_ids["endpoint"]) > 0 ? true : false) : false
 
   #  public_subnets  = local.existing_public_subnets ? data.aws_subnet.public : aws_subnet.public # not used keeping for ref
   private_subnets = local.existing_private_subnets ? data.aws_subnet.private : aws_subnet.private
@@ -18,6 +19,7 @@ locals {
 
   # Use private subnets if we are not creating db subnets and there are no existing db subnets
   database_subnets = local.existing_database_subnets ? data.aws_subnet.database : element(concat(aws_subnet.database[*].id, tolist([""])), 0) != "" ? aws_subnet.database : local.private_subnets
+  endpoint_subnets = local.existing_endpoint_subnets ? data.aws_subnet.endpoint : element(concat(aws_subnet.endpoint[*].id, tolist([""])), 0) != "" ? aws_subnet.endpoint : local.private_subnets
 
   byon_tier     = var.vpc_id == null ? 0 : local.existing_private_subnets ? (var.raw_sec_group_id == null && var.cluster_security_group_id == null && var.workers_security_group_id == null) ? 2 : 3 : 1
   byon_scenario = local.byon_tier
@@ -63,9 +65,8 @@ resource "aws_vpc_endpoint" "private_endpoints" {
   )
 
   subnet_ids = each.value == "Interface" ? [
-#   for subnet in local.private_subnets : subnet.id
-#   modify subnet ID
-    "subnet-0c8b455d0b4a2db3a"
+   for subnet in local.endpoint_subnets : subnet.id
+   # "subnet-0c8b455d0b4a2db3a"
   ] : null
 }
 
@@ -82,6 +83,11 @@ data "aws_subnet" "private" {
 data "aws_subnet" "database" {
   count = local.existing_database_subnets ? length(var.existing_subnet_ids["database"]) : 0
   id    = element(var.existing_subnet_ids["database"], count.index)
+}
+
+data "aws_subnet" "endpoint" {
+  count = local.existing_endpoint_subnets ? length(var.existing_subnet_ids["endpoint"]) : 0
+  id    = element(var.existing_subnet_ids["endpoint"], count.index)
 }
 
 data "aws_subnet" "control_plane" {
@@ -265,6 +271,28 @@ resource "aws_db_subnet_group" "database" {
   tags = merge(
     {
       "Name" = format("%s", var.name)
+    },
+    var.tags,
+  )
+}
+
+##################
+# Endpoints subnet - in same AZ as the private subnet
+##################
+resource "aws_subnet" "endpoint" {
+  count                = local.existing_endpoint_subnets ? 0 : local.create_subnets ? length(var.subnets["endpoint"]) : 0
+  vpc_id               = local.vpc_id
+  cidr_block           = element(var.subnets["endpoint"], count.index)
+  availability_zone    = length(regexall("^[a-z]{2}-", element(var.private_subnet_azs, count.index))) > 0 ? element(var.private_subnet_azs, count.index) : null
+  availability_zone_id = length(regexall("^[a-z]{2}-", element(var.private_subnet_azs, count.index))) == 0 ? element(var.private_subnet_azs, count.index) : null
+
+  tags = merge(
+    {
+      "Name" = format(
+        "%s-${var.endpoint_subnet_suffix}-%s",
+        var.name,
+        element(var.private_subnet_azs, count.index),
+      )
     },
     var.tags,
   )
