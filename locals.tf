@@ -142,6 +142,14 @@ locals {
       # User data
       bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=${replace(replace(jsonencode(np_value.node_labels), "/[\"\\{\\}]/", ""), ":", "=")} --register-with-taints=${join(",", np_value.node_taints)}' "
       pre_bootstrap_user_data = (np_value.custom_data != "" ? file(np_value.custom_data) : "")
+      # For AL2 (non-AL2023), use pre_bootstrap_user_data
+      pre_bootstrap_user_data = (np_value.custom_data != "" && !contains(split("_", np_value.cpu_type), "AL2023")) ? file(np_value.custom_data) : ""
+      # For AL2023, custom scripts need to be in cloudinit_post_nodeadm format
+      cloudinit_post_nodeadm = (np_value.custom_data != "" && contains(split("_", np_value.cpu_type), "AL2023")) ? [{
+        content      = file(np_value.custom_data)
+        content_type = "text/x-shellscript"
+      }] : []
+
       metadata_options = {
         http_endpoint               = var.default_nodepool_metadata_http_endpoint
         http_tokens                 = var.default_nodepool_metadata_http_tokens
