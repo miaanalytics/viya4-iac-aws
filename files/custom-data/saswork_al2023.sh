@@ -1,4 +1,5 @@
 #!/bin/bash
+mountName="/saswork"
 rootDevice=`findmnt / -o SOURCE -n`
 fixedRootdevice="${rootDevice%p[0-9]*}"
 
@@ -14,10 +15,17 @@ for dev in /dev/nvme[0-9]n[0-9]; do
         continue
     fi
 
-    mkfs -t xfs $dev
-    mkdir /saswork$counter
-    mount $dev /saswork$counter
-    chmod 777 /saswork$counter
+    model=$(lsblk -dn -o MODEL "$dev")
+
+    # Only EC2 Instance Store NVMe devices
+    if [[ "$model" != *"Instance Storage"* ]]; then
+        continue
+    fi
+
+    mkfs.xfs $dev
+    mkdir $mountName$counter
+    mount $dev $mountName$counter
+    chmod 777 $mountName$counter
 
     ((counter++))
 
