@@ -30,3 +30,6 @@ for dev in /dev/nvme[0-9]n[0-9]; do
     ((counter++))
 
 done
+
+# option as DaemonSet
+# https://github.com/sassoftware/project-mountpoint/blob/0e480298fe098bd7fe8bf57f75f3b486f3941cda/9-Appendix/Kubernetes/local-disk/daemonset-format-mount-local-disk.md?plain=1#L34
