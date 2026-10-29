@@ -1,4 +1,13 @@
 #!/bin/bash
+
+#
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html
+#
+
+# 
+# NOTE: NVMe device names can change when an instance restarts. 
+# 
+
 mountName="/saswork"
 rootDevice=`findmnt / -o SOURCE -n`
 fixedRootdevice="${rootDevice%p[0-9]*}"
@@ -15,9 +24,8 @@ for dev in /dev/nvme[0-9]n[0-9]; do
         continue
     fi
 
-    model=$(lsblk -dn -o MODEL "$dev")
-
     # Only EC2 Instance Store NVMe devices
+    model=$(lsblk -dn -o MODEL "$dev")
     if [[ "$model" != *"Instance Storage"* ]]; then
         continue
     fi
@@ -31,5 +39,8 @@ for dev in /dev/nvme[0-9]n[0-9]; do
 
 done
 
-# option as DaemonSet
+# Alternative approach to mount the Instance Store NVMe 
+# https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/docs/getting-started.md
+
+# Alternative approach to mount the Instance Store NVMe devices as a DaemonSet in Kubernetes.
 # https://github.com/sassoftware/project-mountpoint/blob/0e480298fe098bd7fe8bf57f75f3b486f3941cda/9-Appendix/Kubernetes/local-disk/daemonset-format-mount-local-disk.md?plain=1#L34
