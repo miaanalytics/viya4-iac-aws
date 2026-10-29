@@ -8,7 +8,7 @@
 # NOTE: NVMe device names can change when an instance restarts. 
 # 
 
-mountName="/cascache"
+mountName="/saswork"
 rootDevice=`findmnt / -o SOURCE -n`
 fixedRootdevice="${rootDevice%p[0-9]*}"
 
